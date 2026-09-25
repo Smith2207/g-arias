@@ -1,0 +1,15 @@
+'use client';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { ShoppingBag, Trash2, MessageCircle } from 'lucide-react';
+import { useCart } from '@/lib/cart';
+import { itemKey, money, presentationLabel, subtotal, whatsappUrl } from '@/lib/commerce';
+export function Cart({ whatsapp }: { whatsapp: string }) {
+  const { items, quantity, remove, clear } = useCart();
+  const [ready, setReady] = useState(false);
+  useEffect(() => { Promise.resolve(useCart.persist.rehydrate()).then(() => setReady(true)); }, []);
+  if (!ready) return <p className="py-12" role="status">Cargando tu pedido…</p>;
+  if (!items.length) return <div className="card mt-8 p-12 text-center"><ShoppingBag className="mx-auto mb-5" size={40} strokeWidth={1}/><h2 className="font-serif text-3xl">Tu próximo pedido empieza aquí</h2><p className="my-4 text-stone-500">Explora el catálogo y agrega tus favoritos.</p><Link href="/" className="btn">Ver catálogo</Link></div>;
+  const href = whatsappUrl(whatsapp,items);
+  return <div className="mt-8 grid items-start gap-8 lg:grid-cols-[1fr_360px]"><div className="space-y-4">{items.map(i => <article key={itemKey(i)} className="card p-5"><div className="flex justify-between gap-4"><div><Link href={`/producto/${i.id}`} className="text-lg font-semibold hover:underline">{i.nombre}</Link><p className="mt-1 text-sm text-stone-500">{presentationLabel(i.presentacion,i.unidadesPorCaja)}</p><p className="mt-2 text-sm">{money(i.precio)} por paquete</p></div><button aria-label={`Eliminar ${i.nombre}, ${i.presentacion}`} onClick={() => remove(itemKey(i))} className="self-start p-3 text-stone-500"><Trash2 size={18}/></button></div><div className="mt-5 flex items-end justify-between"><label className="text-xs text-stone-500">Paquetes<input aria-label={`Cantidad de ${i.nombre}, ${i.presentacion}`} className="field mt-1 w-24" type="number" min={1} max={999} value={i.cantidad} onChange={e => quantity(itemKey(i),Number(e.target.value))}/></label><strong>{money(subtotal(i)/100)}</strong></div></article>)}<div className="flex justify-between"><Link href="/" className="text-sm underline">← Seguir comprando</Link><button className="text-sm text-stone-500 underline" onClick={() => { if (confirm('¿Vaciar tu pedido?')) clear(); }}>Vaciar carrito</button></div></div><aside className="card p-6"><h2 className="font-serif text-2xl">Resumen del pedido</h2><div className="my-6 flex justify-between border-y border-stone-200 py-5"><span>Total</span><strong className="text-2xl">{money(items.reduce((sum,i) => sum + subtotal(i),0)/100)}</strong></div>{href ? <a href={href} className="btn w-full"><MessageCircle size={19}/>Enviar pedido por WhatsApp</a> : <p role="status" className="text-sm text-amber-800">El canal de pedidos aún no está disponible. Inténtalo más tarde.</p>}<p className="mt-5 text-sm leading-6 text-stone-500">Se abrirá WhatsApp con el resumen de tu pedido. Confirma los precios, la disponibilidad y el costo de envío con nuestro equipo.</p></aside></div>;
+}

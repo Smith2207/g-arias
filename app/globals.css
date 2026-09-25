@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: #22231f;
+  --color-paper: #fbfaf7;
+  --color-accent: #987348;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root { color-scheme: light; }
+html { scroll-behavior: smooth; scroll-padding-top: 110px; }
+body { background: #fbfaf7; color: #22231f; font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+::selection { background: #e9dcc8; color: #22231f; }
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-7xl px-5 py-12 md:px-10; }
+  .btn { @apply inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-white transition duration-300 hover:bg-[#45463c] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-secondary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-ink/20 bg-transparent px-5 py-3 text-sm font-medium transition hover:bg-stone-100; }
+  .field { @apply block w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-base outline-none focus:border-ink focus:ring-2 focus:ring-ink/10; }
+  .card { @apply rounded-2xl border border-stone-200 bg-white; }
+  .eyebrow { @apply text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500 sm:text-xs; }
+  .announcement { @apply flex justify-center gap-4 bg-ink px-5 py-2.5 text-[9px] tracking-[0.15em] text-white/90 sm:justify-between sm:px-10; }
+  .announcement > span { @apply items-center gap-2 sm:flex; }
+  .site-header { @apply sticky top-0 z-40 border-b border-ink/10 bg-paper/95 backdrop-blur-xl; }
+  .site-header-inner { @apply mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 md:h-24 md:px-10; }
+  .brand { @apply inline-flex items-start text-[43px] font-bold leading-none tracking-[-0.09em]; }
+  .brand > span { @apply ml-1 mt-1 text-xs font-normal tracking-normal; }
+  .main-nav { @apply flex items-center gap-8 text-xs font-medium md:text-sm; }
+  .main-nav a { @apply transition hover:text-accent; }
+  .cart-link { @apply flex min-h-11 items-center gap-2 rounded-full border border-ink/15 px-3 py-2 text-xs transition hover:border-ink/50 sm:gap-3 sm:px-4; }
+  .cart-count { @apply flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-[10px] text-white; }
+  .site-footer { @apply bg-ink text-white; }
+  .hero-title { @apply text-[clamp(3.8rem,7.4vw,7.2rem)] font-medium leading-[0.96] tracking-[-0.07em]; }
+  .hero-title em { @apply font-serif font-normal tracking-[-0.065em] text-accent; }
+  .hero-photo { @apply relative min-h-[380px] overflow-hidden rounded-[4px] bg-[#d6bf9b] sm:min-h-[490px] lg:min-h-[600px]; }
+  .section-title { @apply text-3xl font-medium leading-tight tracking-[-0.055em] md:text-5xl; }
+  .category-pill { @apply flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-ink/15 px-5 py-2.5 text-xs transition hover:border-ink; }
+  .category-pill[aria-current="page"] { @apply border-ink bg-ink text-white; }
+  .product-card { @apply block rounded-xl outline-offset-4; }
+  .product-card .product-photo img { @apply transition-transform duration-700 group-hover:scale-105; }
+  .product-photo { @apply relative flex aspect-[4/5] items-center justify-center overflow-hidden rounded-lg bg-[#eeede8]; }
+  .product-arrow { @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink/15 transition duration-300 group-hover:-rotate-45 group-hover:border-ink group-hover:bg-ink group-hover:text-white; }
 }
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.skip-link { position: fixed; left: 16px; top: -100px; z-index: 100; background: #22231f; color: white; padding: 12px 20px; }
+.skip-link:focus { top: 10px; }
+button, a, input, select, textarea { @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink; }
+button { cursor: pointer; }
+h1,h2,h3 { text-wrap: balance; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Keep the environment template versioned
+!.env.example
+/playwright-report/
+/test-results/
