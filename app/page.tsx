@@ -63,7 +63,7 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
         <Reveal className="flex flex-col justify-center py-4 lg:py-8">
           <div className="eyebrow mb-7 flex items-center gap-3"><span className="h-px w-7 bg-accent" />Sombreros & gorras · Al por mayor</div>
           <h1 className="hero-title">El estilo<br />empieza<br /><em>por arriba.</em></h1>
-          <p className="mt-7 max-w-sm text-sm leading-7 text-stone-600 md:text-base">Dale a tu tienda una colección con personalidad. Elige tus favoritos y compra a la medida de tu negocio.</p>
+          <p className="mt-7 max-w-sm text-sm leading-7 text-stone-600 md:text-base">Explora nuestros modelos y precios al por mayor. Agrega tus favoritos al carrito y envíanos tu pedido por WhatsApp.</p>
           <div className="mt-8 flex flex-wrap items-center gap-6">
             <a href="#catalogo" className="btn">Descubrir la colección <ArrowUpRight size={18} strokeWidth={1.5} /></a>
             <a href="#como-comprar" className="flex min-h-11 items-center gap-2 text-xs font-medium">Así de fácil <ArrowDown size={15} /></a>
@@ -130,11 +130,23 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
                 <Link href={`/producto/${p.id}`} className="product-card group">
                   <div className="relative"><ProductImage url={p.imagenes[0]?.url} name={p.nombre} /><span className="absolute bottom-3 left-3 rounded-full bg-white/90 px-3 py-1.5 text-[9px] uppercase tracking-wider backdrop-blur-sm">Venta mayorista</span></div>
                   <div className="mt-4"><p className="eyebrow text-[9px]">{p.categoria}</p><h3 className="mt-2 text-sm font-medium leading-snug md:text-base">{p.nombre}</h3></div>
-                  <div className="mt-4 flex items-center justify-between gap-2">
-                    <div><p className="text-[10px] text-stone-500">Desde</p><p className="mt-0.5 text-lg font-medium tracking-tight">{money(Math.min(Number(p.precioMediaDocena), Number(p.precioDocena), Number(p.precioCaja)))}</p></div>
+                  <p className="mt-4 text-[10px] text-stone-500">Precios por paquete completo</p>
+                  <dl className="mt-2 space-y-2 text-xs">
+                    {[
+                      { label: '½ docena · 6 un.', price: p.precioMediaDocena },
+                      { label: 'Docena · 12 un.', price: p.precioDocena },
+                      { label: `Caja · ${p.unidadesPorCaja} un.`, price: p.precioCaja },
+                    ].map(({ label, price }) => (
+                      <div key={label} className="flex flex-wrap justify-between gap-x-2 gap-y-1">
+                        <dt className="text-stone-600">{label}</dt>
+                        <dd className="font-semibold tabular-nums">{money(Number(price))}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <div className="mt-4 flex items-center justify-between gap-2 border-t border-ink/10 pt-3">
+                    <span className="text-xs font-medium">Elegir y agregar</span>
                     <span className="product-arrow"><ArrowRight size={18} strokeWidth={1.5} /></span>
                   </div>
-                  <p className="mt-2 text-[10px] text-stone-500">Por presentación · Ver opciones</p>
                 </Link>
               </Reveal>
             ))}
@@ -161,8 +173,8 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
           <div className="grid gap-8 md:grid-cols-3 md:gap-12">
             {[
               { Icon: HatGlasses, title: 'Encuentra tu estilo', text: 'Explora la colección y elige los modelos que van con tus clientes.' },
-              { Icon: ShoppingBag, title: 'Arma tu pedido', text: 'Selecciona media docena, docena o caja. Agrega la cantidad que necesitas.' },
-              { Icon: MessageCircle, title: 'Conversemos', text: 'Envía tu selección por WhatsApp. Confirmamos precios, disponibilidad y envío.' },
+              { Icon: ShoppingBag, title: 'Arma tu pedido', text: 'Selecciona media docena, docena o caja y agrega tus productos al carrito. Allí verás el total de tu selección.' },
+              { Icon: MessageCircle, title: 'Envía por WhatsApp', text: 'Desde el carrito, abre tu pedido en WhatsApp y pulsa enviar. Coordinamos contigo la disponibilidad, el pago y el envío.' },
             ].map(({ Icon, title, text }, index) => (
               <Reveal key={title} delay={index * 0.08} className="border-t border-ink/20 pt-6">
                 <div className="mb-7 flex items-center justify-between"><span className="font-serif text-4xl italic text-accent">0{index + 1}</span><Icon size={25} strokeWidth={1.25} /></div>

@@ -20,8 +20,8 @@ body { background: #fbfaf7; color: #22231f; font-family: Arial, Helvetica, sans-
   .announcement > span { @apply items-center gap-2 sm:flex; }
   .site-header { @apply sticky top-0 z-40 border-b border-ink/10 bg-paper/95 backdrop-blur-xl; }
   .site-header-inner { @apply mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 md:h-24 md:px-10; }
-  .brand { @apply inline-flex items-start text-[43px] font-bold leading-none tracking-[-0.09em]; }
-  .brand > span { @apply ml-1 mt-1 text-xs font-normal tracking-normal; }
+  .brand { @apply inline-flex shrink-0 flex-col items-start gap-1 leading-none; }
+  .brand > strong { @apply text-3xl font-bold tracking-tight sm:text-4xl; }
   .main-nav { @apply flex items-center gap-8 text-xs font-medium md:text-sm; }
   .main-nav a { @apply transition hover:text-accent; }
   .cart-link { @apply flex min-h-11 items-center gap-2 rounded-full border border-ink/15 px-3 py-2 text-xs transition hover:border-ink/50 sm:gap-3 sm:px-4; }

@@ -1,5 +1,7 @@
 # Arias · Catálogo mayorista
 
+Nombre comercial: **Arias**. Empresa: **Coorporacion Global Arias G&L**.
+
 Catálogo responsive de sombreros y gorras con pedidos por WhatsApp, sin pasarela de pago. Next.js 16 (App Router), React 19, TypeScript, Tailwind 4, Prisma 6, Neon/Postgres y Vercel Blob público.
 
 ## Instalar y configurar
@@ -113,7 +115,7 @@ Next.js 16 renombró `middleware.ts` a `proxy.ts`. El proxy verifica la cookie f
 
 ## Precios y pedidos
 
-- Los tres precios corresponden al **paquete completo**, no a una unidad. “Desde” muestra el menor de esos tres precios.
+- Los tres precios corresponden al **paquete completo**, no a una unidad. Cada tarjeta del catálogo muestra el precio y las unidades de media docena, docena y caja. “Elegir y agregar” abre el detalle para seleccionar la presentación y agregarla al carrito.
 - Una caja contiene un múltiplo de 12 unidades; el detalle muestra la cantidad de docenas.
 - El selector y carrito cuentan paquetes (máximo 999 por línea). Un producto con distinta presentación ocupa líneas diferentes.
 - Moneda inicial: soles peruanos (PEN), definida en `lib/commerce.ts` y en las etiquetas del formulario administrativo.

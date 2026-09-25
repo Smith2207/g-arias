@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         <header className="site-header">
           <div className="site-header-inner">
-            <Link href="/" aria-label="Arias, inicio" className="brand">arias<span aria-hidden="true">✳</span></Link>
+            <Link href="/" aria-label="Arias, inicio" className="brand"><strong>Arias</strong></Link>
             <nav aria-label="Navegación principal" className="main-nav">
               <Link href="/#catalogo">Colección</Link>
               <Link href="/#como-comprar" className="hidden sm:block">Cómo comprar</Link>
@@ -33,8 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="container-page pb-7">
             <div className="flex flex-col justify-between gap-8 border-b border-white/15 pb-10 sm:flex-row">
               <div>
-                <Link href="/" className="brand text-white">arias<span aria-hidden="true">✳</span></Link>
-                <p className="mt-5 max-w-xs text-sm leading-7 text-white/60">Sombreros y gorras con personalidad.<br />Una nueva oportunidad para tu negocio.</p>
+                <Link href="/" className="brand text-white"><strong>Arias</strong></Link>
+                <p className="mt-5 max-w-xs text-sm leading-7 text-white/60">Sombreros y gorras al por mayor.<br />Una nueva oportunidad para tu negocio.</p>
               </div>
               <nav aria-label="Enlaces de ayuda" className="grid content-start gap-4 text-sm">
                 <Link href="/#catalogo" className="flex items-center gap-8">Explorar la colección <MoveUpRight size={16} /></Link>
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </nav>
             </div>
             <div className="flex flex-wrap justify-between gap-3 pt-6 text-xs text-white/50">
-              <p>© {new Date().getFullYear()} Arias. Todos los derechos reservados.</p>
+              <p>© {new Date().getFullYear()} Coorporacion Global Arias G&amp;L. Todos los derechos reservados.</p>
               <p>Venta mayorista · Atención personalizada</p>
             </div>
           </div>
