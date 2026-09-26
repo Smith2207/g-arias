@@ -10,7 +10,7 @@ test('Catálogo vacío, carrito y protección administrativa', async ({ page }, 
   await page.getByRole('link', { name: /Mi pedido,/ }).click();
   await expect(page.getByRole('heading', { name: 'Tu próximo pedido empieza aquí' })).toBeVisible();
   await page.goto('/admin/productos/nuevo');
-  await expect(page).toHaveURL(/\/admin\/login$/);
+  await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
 });
 test('El carrito conserva cantidades y genera el enlace de WhatsApp', async ({ page }) => {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, MoveUpRight } from 'lucide-react';
+import { ArrowUpRight, MoveUpRight, UserRound } from 'lucide-react';
 import { CartLink } from '@/components/cart-link';
 import './globals.css';
 
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/#catalogo">Colección</Link>
               <Link href="/#como-comprar" className="hidden sm:block">Cómo comprar</Link>
             </nav>
-            <CartLink />
+            <div className="flex items-center gap-2"><Link href="/login" aria-label="Mi cuenta" className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 hover:border-ink/50"><UserRound size={18} /></Link><CartLink /></div>
           </div>
         </header>
         <main id="contenido" className="flex-1">{children}</main>
@@ -40,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/#catalogo" className="flex items-center gap-8">Explorar la colección <MoveUpRight size={16} /></Link>
                 <Link href="/#como-comprar">Cómo hacer tu pedido</Link>
                 <Link href="/carrito">Ver mi pedido</Link>
+                <Link href="/login">Mi cuenta</Link>
               </nav>
             </div>
             <div className="flex flex-wrap justify-between gap-3 pt-6 text-xs text-white/50">

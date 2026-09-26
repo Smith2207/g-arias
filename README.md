@@ -49,7 +49,7 @@ npm run db:seed
 npm run dev
 ```
 
-Reinicia el servidor de desarrollo después de cambiar `.env`. El seed requiere un hash bcrypt válido. El catálogo se llena creando productos desde `/admin/login`; el seed no inserta productos de muestra.
+Reinicia el servidor de desarrollo después de cambiar `.env`. El seed requiere un hash bcrypt válido. El catálogo se llena creando productos desde `/login`; el seed no inserta productos de muestra.
 
 ## Hacer el build
 
@@ -78,7 +78,7 @@ npm run dev
 
 `db:deploy` aplica la migración inicial incluida sin necesitar una shadow database. Para futuros cambios del esquema, usa `npm run db:migrate -- --name nombre_del_cambio` contra una base de desarrollo; Prisma puede requerir permisos para crear la shadow database. No ejecutes `migrate dev` sobre producción.
 
-El seed lee `.env` y crea/actualiza un solo administrador con ID fijo (`owner`); no carga productos ficticios. Vuelve a ejecutarlo para cambiar usuario o contraseña. Entra en `/admin/login` y crea los productos reales. Si no existe `DATABASE_URL`, la portada muestra un estado de preparación; no se sustituye una conexión fallida por datos de muestra.
+El seed lee `.env` y crea/actualiza un solo administrador con ID fijo (`owner`); no carga productos ficticios. Vuelve a ejecutarlo para cambiar usuario o contraseña. Entra en `/login` y crea los productos reales. Si no existe `DATABASE_URL`, la portada muestra un estado de preparación; no se sustituye una conexión fallida por datos de muestra.
 
 ```sh
 npm run lint
@@ -111,7 +111,7 @@ scripts/                         # Seed de administrador y hash de contraseña
 tests/                           # Sesiones, validaciones y WhatsApp
 ```
 
-Next.js 16 renombró `middleware.ts` a `proxy.ts`. El proxy verifica la cookie firmada y las consultas/mutaciones administrativas comprueban además que el administrador exista en la base. La cookie es HttpOnly, SameSite=Lax, Secure en producción y caduca a las 8 horas. Las Server Actions tienen la comprobación de origen de Next.js; la autorización de subida comprueba origen y sesión. Configura una regla de rate limiting en el firewall de Vercel para `POST /admin/login` antes de exponer el acceso públicamente. Cambiar `SESSION_SECRET` invalida todas las sesiones existentes.
+Next.js 16 renombró `middleware.ts` a `proxy.ts`. El proxy verifica la cookie firmada y las consultas/mutaciones administrativas comprueban además que el administrador exista en la base. La cookie es HttpOnly, SameSite=Lax, Secure en producción y caduca a las 8 horas. Las Server Actions tienen la comprobación de origen de Next.js; la autorización de subida comprueba origen y sesión. Configura una regla de rate limiting en el firewall de Vercel para `POST /login` y `POST /registro` antes de exponer el acceso públicamente. Cambiar `SESSION_SECRET` invalida todas las sesiones existentes.
 
 ## Precios y pedidos
 
@@ -146,7 +146,7 @@ Referencias: [Next.js Proxy](https://nextjs.org/docs/app/getting-started/proxy),
 
 ## Verificación en este entorno
 
-TypeScript, ESLint, las 4 pruebas unitarias y las 6 pruebas de navegador (móvil y escritorio) pasan. La compilación de producción se verificó con `npm run build` (Turbopack) y anteriormente con `npm run build -- --webpack`. Webpack sigue disponible como alternativa si otro entorno restringe los sockets de Turbopack. No se ejecutaron migraciones sobre Neon ni subidas reales sin credenciales.
+TypeScript, ESLint, las 5 pruebas unitarias y las 6 pruebas de navegador (móvil y escritorio) pasan. La compilación de producción se verificó con `npm run build` (Turbopack) y anteriormente con `npm run build -- --webpack`. Webpack sigue disponible como alternativa si otro entorno restringe los sockets de Turbopack. Se aplicó la migración de clientes a la base configurada y se verificaron login de administrador, registro/login de cliente y bloqueo del panel para clientes. La cuenta temporal de prueba fue eliminada. Las subidas de imágenes no se verificaron en esta revisión.
 
 `npm audit` reporta un aviso alto de agotamiento de pila en `deepmerge-ts <8`, transitivo del CLI de Prisma 6 (`@prisma/config`). El proyecto no acepta configuración de Prisma de usuarios; evita cargar configuraciones externas no confiables. No se aplicó `audit fix --force`, que propone cambiar la versión del ORM. Revisa este aviso al actualizar Prisma.
 
@@ -162,8 +162,14 @@ La configuración de pruebas inicia el servidor sin base de datos y con un núme
 
 ## Diseño de la tienda
 
-La interfaz pública está orientada exclusivamente a clientes: colección, guía de compra y pedido. El administrador entra directamente en `/admin/login`; no hay enlaces administrativos en la cabecera ni el pie.
+La interfaz pública está orientada exclusivamente a clientes: colección, guía de compra y pedido. El administrador entra directamente en `/login`; no hay enlaces administrativos en la cabecera ni el pie.
 
 Se utiliza [Motion para React](https://motion.dev/docs/react-installation) para las entradas de secciones y el contador del carrito, con soporte de movimiento reducido. Los iconos son Lucide. La búsqueda, las categorías y el ordenamiento se procesan en el servidor mediante parámetros de URL.
 
 `public/images/editorial-hats.webp` es una imagen editorial generada, optimizada a unos 152 KB: no representa un producto disponible ni se usa como foto de producto. Las tarjetas muestran únicamente productos activos de la base de datos y sus imágenes reales. Si falla la conexión, la portada sigue disponible y presenta un mensaje al cliente sin detalles técnicos.
+
+## Cuentas y acceso
+
+La entrada común es `/login`. El servidor identifica la cuenta: los administradores entran en `/admin/productos` y los clientes en `/cuenta`. `/admin/login` redirige al nuevo acceso. El registro opcional `/registro` crea exclusivamente clientes. El catálogo y el carrito siguen disponibles sin registrarse; el carrito se conserva en el navegador y los pedidos se coordinan por WhatsApp, sin historial en la cuenta.
+
+Aplica `npm run db:deploy` antes de desplegar esta versión para crear la tabla `Cliente`. No cambia productos ni administradores existentes. El usuario del administrador se obtiene de `ADMIN_USER`; `ADMIN_PASSWORD_HASH` se sincroniza con la base al ejecutar el seed. El login comprueba la contraseña contra la base, no contra `.env`. En Vercel verifica `DATABASE_URL` y un `SESSION_SECRET` de al menos 32 caracteres en el entorno del despliegue.

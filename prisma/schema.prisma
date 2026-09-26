@@ -39,3 +39,11 @@ model Admin {
   usuario      String @unique
   passwordHash String
 }
+
+model Cliente {
+  id           String @id @default(cuid())
+  usuario      String @unique
+  nombre       String
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
