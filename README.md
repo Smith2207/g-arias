@@ -92,17 +92,21 @@ npm start
 
 ```text
 prisma/
-  schema.prisma                  # Producto, ImagenProducto, Admin
+  schema.prisma                  # Producto, ImagenProducto, Admin y Cliente
   migrations/                    # Migración inicial SQL
 app/
-  page.tsx                       # Catálogo y categorías (Server Component)
-  producto/[id]/page.tsx          # Detalle (Server Component)
-  carrito/page.tsx                # Carrito persistido en el navegador
+  (tienda)/layout.tsx             # Cabecera y pie del ecommerce
+  (tienda)/page.tsx               # Catálogo y categorías
+  (tienda)/producto/[id]/page.tsx  # Detalle
+  (tienda)/carrito/page.tsx        # Carrito persistido en el navegador
+  admin/layout.tsx               # Panel independiente protegido
+  admin/page.tsx                  # Resumen del catálogo
   admin/login/page.tsx
   admin/productos/page.tsx
   admin/productos/nuevo/page.tsx
   admin/productos/[id]/editar/page.tsx
-  admin/actions.ts               # Autenticación y mutaciones protegidas
+  admin/actions.ts               # Mutaciones protegidas de productos
+  login/actions.ts               # Acceso, registro y cierre de sesión
   api/upload/route.ts             # Autorización de subida a Blob
 components/                      # Galería, carrito, formularios e imágenes
 lib/                             # Prisma, sesión, validaciones y cálculos
@@ -170,6 +174,14 @@ Se utiliza [Motion para React](https://motion.dev/docs/react-installation) para 
 
 ## Cuentas y acceso
 
-La entrada común es `/login`. El servidor identifica la cuenta: los administradores entran en `/admin/productos` y los clientes en `/cuenta`. `/admin/login` redirige al nuevo acceso. El registro opcional `/registro` crea exclusivamente clientes. El catálogo y el carrito siguen disponibles sin registrarse; el carrito se conserva en el navegador y los pedidos se coordinan por WhatsApp, sin historial en la cuenta.
+La entrada común es `/login`. El servidor identifica la cuenta: los administradores entran en `/admin` y los clientes en `/cuenta`. `/admin/login` redirige al nuevo acceso. El registro opcional `/registro` crea exclusivamente clientes. El catálogo y el carrito siguen disponibles sin registrarse; el carrito se conserva en el navegador y los pedidos se coordinan por WhatsApp, sin historial en la cuenta.
 
 Aplica `npm run db:deploy` antes de desplegar esta versión para crear la tabla `Cliente`. No cambia productos ni administradores existentes. El usuario del administrador se obtiene de `ADMIN_USER`; `ADMIN_PASSWORD_HASH` se sincroniza con la base al ejecutar el seed. El login comprueba la contraseña contra la base, no contra `.env`. En Vercel verifica `DATABASE_URL` y un `SESSION_SECRET` de al menos 32 caracteres en el entorno del despliegue.
+
+## Panel administrativo
+
+`/admin` muestra un resumen del catálogo con enlaces a productos publicados y ocultos, un aviso de fotografías pendientes y los últimos productos actualizados. La navegación administrativa es independiente: no incluye cabecera, carrito ni pie de la tienda. En escritorio usa menú lateral; en móvil, navegación superior compacta. `Ver tienda` permite regresar al ecommerce.
+
+Las operaciones siguen verificando la cuenta administrativa en el servidor. Guardar o modificar un producto actualiza también el resumen. Los pedidos continúan por WhatsApp; no se muestran ventas ni inventario que el sistema no registra.
+
+`npm run test:admin` comprueba navegación, ausencia de elementos de tienda, adaptación a 320/768/1280 px, cierre de sesión y bloqueo de clientes. Requiere `.env`, un administrador existente identificado por `ADMIN_USER` y el puerto 3202 libre. Usa sesiones de prueba firmadas y consultas de solo lectura: no modifica productos ni cuentas. Ejecutar después de `npm run build`.

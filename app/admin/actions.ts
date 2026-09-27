@@ -17,7 +17,7 @@ export async function saveProduct(id: string | null, _: FormState, form: FormDat
     if (id) await db.producto.update({ where: { id }, data: { ...data, imagenes: { deleteMany: {}, create: nestedImages } } });
     else await db.producto.create({ data: { ...data, imagenes: { create: nestedImages } } });
   } catch { return { error: 'No se pudo guardar el producto. Inténtalo nuevamente.' }; }
-  revalidatePath('/'); revalidatePath('/admin/productos');
+  revalidatePath('/admin'); revalidatePath('/'); revalidatePath('/admin/productos');
   if (id) revalidatePath(`/producto/${id}`);
   redirect('/admin/productos');
 }
@@ -30,6 +30,6 @@ export async function changeProduct(_: FormState, form: FormData): Promise<FormS
     else if (action === 'activate' || action === 'deactivate') await db.producto.update({ where: { id }, data: { activo: action === 'activate' } });
     else return { error: 'Operación inválida.' };
   } catch { return { error: 'No se pudo actualizar el producto.' }; }
-  revalidatePath('/'); revalidatePath('/admin/productos'); revalidatePath(`/producto/${id}`);
+  revalidatePath('/admin'); revalidatePath('/'); revalidatePath('/admin/productos'); revalidatePath(`/producto/${id}`);
   return {};
 }

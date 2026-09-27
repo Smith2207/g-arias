@@ -24,7 +24,7 @@ export async function login(_: FormState, form: FormData): Promise<FormState> {
     const valid = await bcrypt.compare(password, account?.passwordHash ?? dummy);
     if (!account || !valid) return { error: 'Usuario o contraseña incorrectos. Comprueba tus datos y vuelve a intentarlo.' };
     await startSession(account.id, admin ? 'admin' : 'cliente');
-    if (admin) destination = '/admin/productos';
+    if (admin) destination = '/admin';
   } catch {
     console.warn('[Login] No se pudo consultar la cuenta o crear la sesión.');
     return { error: 'No pudimos iniciar sesión en este momento. Inténtalo de nuevo en unos minutos.' };
