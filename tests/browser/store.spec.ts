@@ -57,3 +57,20 @@ test('Filtros, búsqueda y navegación hacia cómo comprar', async ({ page }) =>
   await expect(page.getByRole('heading', { name: 'Arma tu pedido' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('Las pantallas públicas se adaptan a móvil pequeño y tablet', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'Los tamaños adicionales se revisan una vez.');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const width of [320, 768]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of ['/', '/login', '/registro', '/carrito']) {
+      await page.goto(path);
+      await expect(page.locator('h1')).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${path} a ${width}px`).toBe(true);
+      if (path === '/login' || path === '/registro') {
+        await expect(page.getByRole('button', { name: path === '/login' ? 'Iniciar sesión' : 'Crear cuenta', exact: true })).toBeVisible();
+      }
+      await page.screenshot({ path: testInfo.outputPath(`${path.replaceAll('/', '') || 'home'}-${width}.png`), fullPage: true });
+    }
+  }
+});

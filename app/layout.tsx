@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight, MoveUpRight, UserRound } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 import { CartLink } from '@/components/cart-link';
 import './globals.css';
 
@@ -14,10 +14,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body className="flex min-h-screen flex-col">
         <a href="#contenido" className="skip-link">Saltar al contenido</a>
-        <div className="announcement">
-          <span>BUEN ESTILO. MEJORES OPORTUNIDADES.</span>
-          <span className="hidden sm:flex">Venta al por mayor · Desde 6 unidades <ArrowUpRight size={13} /></span>
-        </div>
         <header className="site-header">
           <div className="site-header-inner">
             <Link href="/" aria-label="Arias, inicio" className="brand"><strong>Arias</strong></Link>
@@ -29,24 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </header>
         <main id="contenido" className="flex-1">{children}</main>
-        <footer className="site-footer">
-          <div className="container-page pb-7">
-            <div className="flex flex-col justify-between gap-8 border-b border-white/15 pb-10 sm:flex-row">
-              <div>
-                <Link href="/" className="brand text-white"><strong>Arias</strong></Link>
-                <p className="mt-5 max-w-xs text-sm leading-7 text-white/60">Sombreros y gorras al por mayor.<br />Una nueva oportunidad para tu negocio.</p>
-              </div>
-              <nav aria-label="Enlaces de ayuda" className="grid content-start gap-4 text-sm">
-                <Link href="/#catalogo" className="flex items-center gap-8">Explorar la colección <MoveUpRight size={16} /></Link>
-                <Link href="/#como-comprar">Cómo hacer tu pedido</Link>
-                <Link href="/carrito">Ver mi pedido</Link>
-                <Link href="/login">Mi cuenta</Link>
-              </nav>
-            </div>
-            <div className="flex flex-wrap justify-between gap-3 pt-6 text-xs text-white/50">
-              <p>© {new Date().getFullYear()} Coorporacion Global Arias G&amp;L. Todos los derechos reservados.</p>
-              <p>Venta mayorista · Atención personalizada</p>
-            </div>
+        <footer className="border-t border-ink/10">
+          <div className="container-page flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-stone-500">© {new Date().getFullYear()} Arias · Venta al por mayor</p>
+            <nav aria-label="Enlaces de ayuda" className="flex flex-wrap gap-x-5 text-xs text-stone-600"><Link className="inline-flex min-h-11 items-center" href="/#como-comprar">Cómo comprar</Link><Link className="inline-flex min-h-11 items-center" href="/carrito">Ver mi pedido</Link><Link className="inline-flex min-h-11 items-center" href="/login">Mi cuenta</Link></nav>
           </div>
         </footer>
       </body>
