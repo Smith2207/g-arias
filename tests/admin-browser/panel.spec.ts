@@ -15,7 +15,7 @@ test('Panel independiente, navegación y formulario adaptables', async ({ page, 
   await context.addCookies([{ name: SESSION_COOKIE, value: await signSession(adminId), url: 'http://127.0.0.1:3202', httpOnly: true, sameSite: 'Lax' }]);
   await page.goto('/login');
   await expect(page).toHaveURL(/\/admin$/);
-  for (const [path, heading] of [['/admin', 'Inicio'], ['/admin/productos', 'Productos'], ['/admin/productos/nuevo', 'Nuevo producto']]) {
+  for (const [path, heading] of [['/admin', 'Inicio'], ['/admin/productos', 'Productos'], ['/admin/productos/nuevo', 'Nuevo producto'], ['/admin/inventario', 'Inventario'], ['/admin/pedidos', 'Pedidos'], ['/admin/configuracion', 'Configuración']]) {
     await page.goto(path);
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'Administración', exact: true })).toBeVisible();

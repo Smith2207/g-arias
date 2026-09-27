@@ -20,6 +20,10 @@ model Producto {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   imagenes          ImagenProducto[]
+  stock             Int?
+  stockMinimo       Int @default(12)
+  variantes         Variante[]
+  lineasPedido      LineaPedido[]
 
   @@index([activo, categoria])
 }
@@ -46,4 +50,70 @@ model Cliente {
   nombre       String
   passwordHash String
   createdAt    DateTime @default(now())
+}
+
+model Variante {
+  id          String @id @default(cuid())
+  productoId  String
+  producto    Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  color       String
+  talla       String
+  stock       Int?
+  stockMinimo Int @default(12)
+  activo      Boolean @default(true)
+  lineasPedido LineaPedido[]
+  @@index([productoId, activo])
+}
+
+enum EstadoPedido {
+  PENDIENTE
+  CONFIRMADO
+  ENTREGADO
+  CANCELADO
+}
+
+model Pedido {
+  id          String @id @default(cuid())
+  codigo      String @unique
+  clave       String @unique
+  huella      String
+  nombre      String
+  telefono    String
+  notas       String @default("")
+  estado      EstadoPedido @default(PENDIENTE)
+  total       Decimal @db.Decimal(18, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lineas      LineaPedido[]
+  @@index([estado, createdAt])
+  @@index([telefono, createdAt])
+}
+
+model LineaPedido {
+  id              String @id @default(cuid())
+  pedidoId        String
+  pedido          Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  productoId      String
+  producto        Producto @relation(fields: [productoId], references: [id], onDelete: Restrict)
+  varianteId      String?
+  variante        Variante? @relation(fields: [varianteId], references: [id], onDelete: Restrict)
+  nombre          String
+  varianteNombre  String @default("")
+  presentacion    String
+  cantidad        Int
+  unidades        Int
+  precio          Decimal @db.Decimal(10, 2)
+  stockDescontado  Boolean @default(false)
+  @@index([pedidoId])
+  @@index([productoId])
+  @@index([varianteId])
+}
+
+model Configuracion {
+  id             String @id @default("tienda")
+  nombre         String @default("Arias")
+  whatsapp       String
+  contacto       String @default("")
+  condicionesEnvio String @default("Coordinamos disponibilidad, pago y envío por WhatsApp.")
+  updatedAt      DateTime @updatedAt
 }

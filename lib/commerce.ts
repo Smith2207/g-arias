@@ -4,8 +4,8 @@ export type Presentation = typeof presentations[number];
 export function presentationLabel(type: Presentation, units: number) {
   return type === 'mediaDocena' ? '½ docena · 6 unidades' : type === 'docena' ? '1 docena · 12 unidades' : `Caja · ${units / 12} docenas (${units} unidades)`;
 }
-export type CartItem = { id: string; nombre: string; imagen: string; presentacion: Presentation; unidadesPorCaja: number; precio: number; cantidad: number };
-export const itemKey = (item: Pick<CartItem, 'id' | 'presentacion'>) => `${item.id}:${item.presentacion}`;
+export type CartItem = { varianteId?: string; varianteNombre?: string; id: string; nombre: string; imagen: string; presentacion: Presentation; unidadesPorCaja: number; precio: number; cantidad: number };
+export const itemKey = (item: Pick<CartItem, 'id' | 'presentacion' | 'varianteId'>) => `${item.id}:${item.presentacion}${item.varianteId ? `:${item.varianteId}` : ''}`;
 export const subtotal = (item: CartItem) => Math.round(item.precio * 100) * item.cantidad;
 export function whatsappUrl(number: string, items: CartItem[]) {
   if (!/^[1-9]\d{7,14}$/.test(number) || !items.length) return null;

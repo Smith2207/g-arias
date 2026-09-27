@@ -154,7 +154,7 @@ TypeScript, ESLint, las 5 pruebas unitarias y las 6 pruebas de navegador (móvil
 
 `npm audit` reporta un aviso alto de agotamiento de pila en `deepmerge-ts <8`, transitivo del CLI de Prisma 6 (`@prisma/config`). El proyecto no acepta configuración de Prisma de usuarios; evita cargar configuraciones externas no confiables. No se aplicó `audit fix --force`, que propone cambiar la versión del ORM. Revisa este aviso al actualizar Prisma.
 
-Las pruebas de navegador de `tests/browser` verifican navegación, ausencia de enlaces administrativos en la portada, búsqueda, ordenamiento, protección de rutas, persistencia del carrito y enlace de WhatsApp. Se ejecutan en móvil y escritorio. Para repetirlas, deja libre el puerto 3200:
+Las pruebas de navegador de `tests/browser` verifican navegación, ausencia de enlaces administrativos en la portada, búsqueda, ordenamiento, protección de rutas, persistencia del carrito y formulario de pedido. Se ejecutan en móvil y escritorio. Para repetirlas, deja libre el puerto 3200:
 
 ```sh
 npx playwright install chromium
@@ -185,3 +185,18 @@ Aplica `npm run db:deploy` antes de desplegar esta versión para crear la tabla 
 Las operaciones siguen verificando la cuenta administrativa en el servidor. Guardar o modificar un producto actualiza también el resumen. Los pedidos continúan por WhatsApp; no se muestran ventas ni inventario que el sistema no registra.
 
 `npm run test:admin` comprueba navegación, ausencia de elementos de tienda, adaptación a 320/768/1280 px, cierre de sesión y bloqueo de clientes. Requiere `.env`, un administrador existente identificado por `ADMIN_USER` y el puerto 3202 libre. Usa sesiones de prueba firmadas y consultas de solo lectura: no modifica productos ni cuentas. Ejecutar después de `npm run build`.
+
+
+### Gestión comercial
+
+El panel incluye Productos, Inventario, Pedidos y Configuración, separado de la navegación de la tienda.
+
+- Variantes opcionales por color/talla (hasta 30 por producto), con precios por presentación compartidos. Eliminar una variante del formulario la desactiva y conserva los pedidos históricos.
+- Inventario en unidades por producto o variante. Stock vacío significa sin control; cero significa agotado. El umbral permite filtrar existencias bajas. Los ajustes rechazan sobrescribir un stock que cambió mientras el formulario estaba abierto.
+- El carrito registra un pedido pendiente y proporciona su código y mensaje para WhatsApp. El servidor verifica productos, variantes, precios y cantidades. Reintentar la misma solicitud no crea otro pedido.
+- Confirmar descuenta stock en una transacción; cancelar un confirmado lo devuelve una sola vez. Entregar cierra el pedido. Los pedidos pendientes no reservan unidades. No hay cobro en línea ni verificación automática de pagos.
+- Configuración permite cambiar nombre, WhatsApp, contacto y condiciones de envío. Si no hay configuración guardada, se usa `WHATSAPP_NUMBER` del entorno.
+
+Aplica `npm run db:deploy` antes de desplegar: la migración `20260927000000_gestion_comercial` agrega tablas y columnas sin alterar el catálogo existente. Para migraciones en Neon, usa la conexión directa si el pooler falla.
+
+`npm run test:orders` prueba concurrencia, idempotencia, precios, variantes y stock dentro de un esquema temporal aislado; necesita permisos para crear y eliminar dicho esquema. También recorre el formulario de producto, la compra, confirmación/cancelación y configuración en Chromium, contra ese esquema aislado (puerto 3204 libre y compilación previa). No envía mensajes de WhatsApp ni modifica el catálogo o los pedidos reales. `npm run test:admin` comprueba las secciones a 320, 768 y 1280 px con un administrador existente, sin modificar datos.

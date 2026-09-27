@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { z } from 'zod';
 import { CartItem, itemKey, presentations } from './commerce';
-const itemSchema = z.object({ id: z.string(), nombre: z.string(), imagen: z.string(), presentacion: z.enum(presentations), unidadesPorCaja: z.number().int().positive().multipleOf(12), precio: z.number().positive().max(99999999.99), cantidad: z.number().int().min(1).max(999) });
+const itemSchema = z.object({ varianteId:z.string().optional(), varianteNombre:z.string().optional(), id: z.string(), nombre: z.string(), imagen: z.string(), presentacion: z.enum(presentations), unidadesPorCaja: z.number().int().positive().multipleOf(12), precio: z.number().positive().max(99999999.99), cantidad: z.number().int().min(1).max(999) });
 type Cart = { items: CartItem[]; add: (item: CartItem) => void; quantity: (key: string, n: number) => void; remove: (key: string) => void; clear: () => void };
 export const useCart = create<Cart>()(persist((set) => ({
   items: [],

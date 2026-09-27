@@ -1,3 +1,4 @@
+import {getStoreSettings} from '@/lib/store-settings';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Prisma } from '@prisma/client';
@@ -17,7 +18,7 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
   const categoria = typeof params.categoria === 'string' ? params.categoria.slice(0, 80) : '';
   const query = typeof params.q === 'string' ? params.q.trim().slice(0, 100) : '';
   const order = params.orden === 'nombre' ? 'nombre' : 'recientes';
-  const number = process.env.WHATSAPP_NUMBER ?? '';
+  const number = (await getStoreSettings()).whatsapp;
   const contact = /^[1-9]\d{7,14}$/.test(number)
     ? `https://wa.me/${number}?text=${encodeURIComponent('Hola, quisiera información sobre sus sombreros y gorras al por mayor.')}`
     : null;
@@ -154,7 +155,7 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
             {[
               { Icon: HatGlasses, title: 'Encuentra tu estilo', text: 'Explora la colección y elige los modelos que van con tus clientes.' },
               { Icon: ShoppingBag, title: 'Arma tu pedido', text: 'Elige presentación y cantidad. Revisa el total en tu carrito.' },
-              { Icon: MessageCircle, title: 'Envía por WhatsApp', text: 'Envía tu selección. Confirmamos disponibilidad, pago y envío contigo.' },
+              { Icon: MessageCircle, title: 'Confirma tu pedido', text: 'Guarda tu selección y abre WhatsApp para coordinar disponibilidad, pago y envío.' },
             ].map(({ Icon, title, text }, index) => (
               <Reveal key={title} delay={index * 0.08} className="border-t border-ink/15 pt-5">
                 <div className="mb-4 flex items-center justify-between"><span className="font-serif text-4xl italic text-accent">0{index + 1}</span><Icon size={25} strokeWidth={1.25} /></div>

@@ -13,7 +13,7 @@ test('Catálogo vacío, carrito y protección administrativa', async ({ page }, 
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
 });
-test('El carrito conserva cantidades, permite deshacer y genera el enlace de WhatsApp', async ({ page }, testInfo) => {
+test('El carrito conserva cantidades, permite deshacer y prepara el registro del pedido', async ({ page }, testInfo) => {
   await page.goto('/');
   await page.evaluate(() => localStorage.setItem('arias-cart-v1', JSON.stringify({ state: { items: [{ id: 'test', nombre: 'Gorra de prueba', imagen: '', presentacion: 'docena', unidadesPorCaja: 144, cantidad: 2, precio: 60 }] }, version: 0 })));
   await page.goto('/carrito');
@@ -27,16 +27,16 @@ test('El carrito conserva cantidades, permite deshacer y genera el enlace de Wha
   await expect(quantity).toHaveValue('3');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('cart.png'), fullPage: true });
-  const link = page.getByRole('link', { name: 'Enviar pedido por WhatsApp' });
-  await expect(link).toHaveAttribute('href', /^https:\/\/wa.me\/51999999999\?text=/);
-  const message = new URL((await link.getAttribute('href'))!).searchParams.get('text')!;
-  expect(message).toContain('Gorra de prueba');
-  expect(message).toMatch(/180[.,]00/);
+  const checkout = page.getByRole('button', { name: 'Guardar pedido y continuar' });
+  await expect(checkout).toBeVisible();
+  await expect(page.getByLabel('Tu nombre')).toBeVisible();
+  await expect(page.getByLabel('Tu WhatsApp')).toBeVisible();
+  await expect(page.getByText(/180[.,]00/).first()).toBeVisible();
   await page.getByRole('button', { name: /Eliminar Gorra/ }).click();
   await expect(page.getByRole('heading', { name: 'Tu próximo pedido empieza aquí' })).toBeVisible();
   await page.getByRole('button', { name: 'Deshacer' }).click();
   await expect(quantity).toHaveValue('3');
-  await expect(link).toHaveAttribute('href', /^https:\/\/wa.me\/51999999999\?text=/);
+  await expect(checkout).toBeVisible();
   await page.getByRole('button', { name: 'Vaciar carrito' }).click();
   await expect(quantity).toHaveCount(0);
   await page.getByRole('button', { name: 'Deshacer' }).click();
