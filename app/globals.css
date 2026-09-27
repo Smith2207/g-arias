@@ -47,3 +47,9 @@ h1,h2,h3 { text-wrap: balance; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+@layer components {
+  .quantity-button { @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-30; }
+  .quantity-input { @apply h-11 w-12 bg-transparent text-center text-sm font-semibold tabular-nums outline-none; appearance: textfield; }
+  .quantity-input::-webkit-inner-spin-button, .quantity-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+}

@@ -13,7 +13,7 @@ test('Catálogo vacío, carrito y protección administrativa', async ({ page }, 
   await expect(page).toHaveURL(/\/login$/);
   await expect(page.getByRole('button', { name: 'Iniciar sesión' })).toBeVisible();
 });
-test('El carrito conserva cantidades y genera el enlace de WhatsApp', async ({ page }) => {
+test('El carrito conserva cantidades, permite deshacer y genera el enlace de WhatsApp', async ({ page }, testInfo) => {
   await page.goto('/');
   await page.evaluate(() => localStorage.setItem('arias-cart-v1', JSON.stringify({ state: { items: [{ id: 'test', nombre: 'Gorra de prueba', imagen: '', presentacion: 'docena', unidadesPorCaja: 144, cantidad: 2, precio: 60 }] }, version: 0 })));
   await page.goto('/carrito');
@@ -21,6 +21,12 @@ test('El carrito conserva cantidades y genera el enlace de WhatsApp', async ({ p
   await quantity.fill('3');
   await page.reload();
   await expect(quantity).toHaveValue('3');
+  await page.getByRole('button', { name: /Aumentar cantidad/ }).click();
+  await expect(quantity).toHaveValue('4');
+  await page.getByRole('button', { name: /Reducir cantidad/ }).click();
+  await expect(quantity).toHaveValue('3');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath('cart.png'), fullPage: true });
   const link = page.getByRole('link', { name: 'Enviar pedido por WhatsApp' });
   await expect(link).toHaveAttribute('href', /^https:\/\/wa.me\/51999999999\?text=/);
   const message = new URL((await link.getAttribute('href'))!).searchParams.get('text')!;
@@ -28,6 +34,13 @@ test('El carrito conserva cantidades y genera el enlace de WhatsApp', async ({ p
   expect(message).toMatch(/180[.,]00/);
   await page.getByRole('button', { name: /Eliminar Gorra/ }).click();
   await expect(page.getByRole('heading', { name: 'Tu próximo pedido empieza aquí' })).toBeVisible();
+  await page.getByRole('button', { name: 'Deshacer' }).click();
+  await expect(quantity).toHaveValue('3');
+  await expect(link).toHaveAttribute('href', /^https:\/\/wa.me\/51999999999\?text=/);
+  await page.getByRole('button', { name: 'Vaciar carrito' }).click();
+  await expect(quantity).toHaveCount(0);
+  await page.getByRole('button', { name: 'Deshacer' }).click();
+  await expect(quantity).toHaveValue('3');
 });
 
 test('Filtros, búsqueda y navegación hacia cómo comprar', async ({ page }) => {
