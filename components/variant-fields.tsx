@@ -6,11 +6,22 @@ export function VariantFields({ initial = [] }: { initial?: VariantInput[] }) {
     initial.map((v) => ({ ...v, key: v.id ?? crypto.randomUUID() })),
   );
   return (
-    <section className="card p-6">
-      <h2 className="font-semibold">04 · Colores y tallas</h2>
-      <p className="my-3 text-sm leading-6 text-stone-500">
-        Opcional. Agrega las combinaciones disponibles. Todas usan los precios
-        del producto; su stock se ajusta en Inventario.
+    <details className="editor-card group" open={initial.length > 0}>
+      <summary className="flex min-h-6 cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold">
+        Colores y tallas
+        <span className="flex items-center gap-3 text-xs font-normal text-stone-400">
+          {rows.length ? `${rows.length} variantes` : 'Opcional'}
+          <span
+            aria-hidden="true"
+            className="transition-transform group-open:rotate-45 text-lg"
+          >
+            +
+          </span>
+        </span>
+      </summary>
+      <p className="my-3 text-xs leading-5 text-stone-500">
+        Mismos precios, stock por variante. Ajusta las existencias en
+        Inventario.
       </p>
       <input
         type="hidden"
@@ -75,6 +86,6 @@ export function VariantFields({ initial = [] }: { initial?: VariantInput[] }) {
       >
         Agregar variante
       </button>
-    </section>
+    </details>
   );
 }

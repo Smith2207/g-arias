@@ -56,3 +56,17 @@ h1,h2,h3 { text-wrap: balance; }
 
 img { max-width: 100%; }
 input, select, textarea { min-width: 0; }
+
+/* Compact controls belong to the administration workspace only. */
+.admin-workspace .field { min-height: 42px; border-radius: 7px; background: white; padding: 9px 11px; font-weight: 400; }
+.admin-workspace .btn, .admin-workspace .btn-secondary { min-height: 42px; border-radius: 7px; padding: 9px 15px; font-size: 13px; gap: 8px; }
+.admin-workspace .card { border-radius: 10px; }
+.admin-workspace h1 { font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: 600; letter-spacing: -.035em; }
+.editor-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.editor-grid { display: grid; gap: 16px; min-width: 0; }
+.editor-card { border: 1px solid #e4e5e7; border-radius: 10px; background: white; padding: 18px; min-width: 0; }
+.editor-card h2 { margin-bottom: 16px; font-size: 14px; font-weight: 600; }
+.editor-label { display: flex; flex-direction: column; gap: 7px; min-width: 0; font-size: 13px; font-weight: 500; }
+@media (min-width: 768px) { .editor-grid { grid-template-columns: minmax(0,1.8fr) minmax(240px,1fr); align-items: start; } .admin-workspace .field { font-size: 14px; } }
+@media (min-width: 1440px) { .editor-grid { grid-template-columns: minmax(0,1fr) minmax(300px,380px); } }
+@media (max-width: 639px) { .editor-toolbar { flex-wrap: wrap; gap: 12px; } .editor-toolbar > div:last-child { width: 100%; justify-content: flex-end; } .editor-card { padding: 16px; } .admin-workspace h1 { font-size: 22px; } }

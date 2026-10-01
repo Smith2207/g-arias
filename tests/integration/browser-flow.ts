@@ -68,6 +68,10 @@ export async function browserFlow(db: PrismaClient, databaseUrl: string) {
     ])
       await page.locator(`[name="${name}"]`).fill(value);
     await page
+      .locator('summary')
+      .filter({ hasText: 'Colores y tallas' })
+      .click();
+    await page
       .getByRole('button', { name: 'Agregar variante', exact: true })
       .click();
     await page.getByLabel('Color 1', { exact: true }).fill('Negro');
@@ -139,7 +143,9 @@ export async function browserFlow(db: PrismaClient, databaseUrl: string) {
     await page
       .getByRole('button', { name: 'Cancelar pedido', exact: true })
       .click();
-    await expect(page.getByText(/^Cancelado ·/)).toBeVisible({timeout:20000});
+    await expect(page.getByText(/^Cancelado ·/)).toBeVisible({
+      timeout: 20000,
+    });
     assert.equal(
       (
         await db.variante.findUniqueOrThrow({
