@@ -129,6 +129,32 @@ export async function browserFlow(db: PrismaClient, databaseUrl: string) {
       ).stock,
       18,
     );
+    await page.getByLabel('Importe (S/)').fill('10');
+    await page.getByLabel('Concepto', { exact: true }).fill('Adelanto de pedido');
+    await page.getByRole('button', { name: 'Registrar movimiento' }).click();
+    await expect(page.getByRole('status').filter({ hasText: 'Movimiento registrado' })).toBeVisible();
+    assert.equal(await db.movimientoCaja.count({ where: { pedidoId: order.id, tipo: 'COBRO' } }), 1);
+    await page.getByLabel('Dirección de entrega').fill('Av. Prueba 100');
+    await page.getByLabel('Transportista o responsable').fill('Transporte QA');
+    await page.getByLabel('Número de guía / seguimiento').fill('QA-001');
+    await page.getByLabel('Estado del despacho').selectOption('EN_CAMINO');
+    await page.getByRole('button', { name: 'Guardar despacho' }).click();
+    await expect(page.getByText('Despacho actualizado.')).toBeVisible();
+    await page.goto(`${origin}/admin/logistica?estado=EN_CAMINO`);
+    await expect(page.getByRole('link', { name: order.codigo, exact: true })).toBeVisible();
+    for (const width of [320, 768, 1280]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const route of ['contabilidad', 'logistica']) {
+        await page.goto(`${origin}/admin/${route}`);
+        await expect(page.getByRole('heading', { name: route === 'contabilidad' ? 'Contabilidad' : 'Logística', exact: true })).toBeVisible();
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+        await page.screenshot({ path: `.vercel/qa/${route}-${width}.png`, fullPage: true });
+      }
+    }
+    await page.goto(`${origin}/admin/pedidos/${order.id}`);
+    await page.getByLabel('Estado del despacho').selectOption('PREPARACION');
+    await page.getByRole('button', { name: 'Guardar despacho' }).click();
+    await expect(page.getByText('Despacho actualizado.')).toBeVisible();
     await page.setViewportSize({ width: 320, height: 900 });
     assert.ok(
       await page.evaluate(
@@ -154,6 +180,17 @@ export async function browserFlow(db: PrismaClient, databaseUrl: string) {
       ).stock,
       24,
     );
+    await page.getByLabel('Importe (S/)').fill('10');
+    await page.getByRole('combobox', { name: /^Tipo/ }).selectOption('DEVOLUCION');
+    await page.getByLabel('Concepto', { exact: true }).fill('Devolución por cancelación');
+    await page.getByRole('button', { name: 'Registrar movimiento' }).click();
+    await expect(page.getByText('Devolución ·', { exact: false })).toBeVisible();
+    assert.equal(await db.movimientoCaja.count({ where: { pedidoId: order.id, tipo: 'DEVOLUCION' } }), 1);
+    await page.goto(`${origin}/admin/contabilidad`);
+    await page.getByLabel('Importe (S/)').fill('5');
+    await page.getByLabel('Concepto', { exact: true }).fill('Gasto de embalaje QA');
+    await page.getByRole('button', { name: 'Registrar movimiento' }).click();
+    await expect(page.getByRole('heading', { name: 'Gasto · Gasto de embalaje QA' })).toBeVisible();
     await page.goto(`${origin}/admin/configuracion`);
     await page.getByLabel('Nombre del negocio').fill('Tienda QA');
     await page.getByLabel('WhatsApp de pedidos').fill('51999999999');

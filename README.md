@@ -182,14 +182,14 @@ Aplica `npm run db:deploy` antes de desplegar esta versión para crear la tabla 
 
 `/admin` muestra un resumen del catálogo con enlaces a productos publicados y ocultos, un aviso de fotografías pendientes y los últimos productos actualizados. La navegación administrativa es independiente: no incluye cabecera, carrito ni pie de la tienda. En escritorio usa menú lateral; en móvil, navegación superior compacta. `Ver tienda` permite regresar al ecommerce.
 
-Las operaciones siguen verificando la cuenta administrativa en el servidor. Guardar o modificar un producto actualiza también el resumen. Los pedidos continúan por WhatsApp; no se muestran ventas ni inventario que el sistema no registra.
+Las operaciones siguen verificando la cuenta administrativa en el servidor. Guardar o modificar un producto actualiza también el resumen. Los pedidos registrados conectan ventas, inventario, contabilidad operativa y logística; WhatsApp continúa como canal de coordinación.
 
 `npm run test:admin` comprueba navegación, ausencia de elementos de tienda, adaptación a 320/768/1280 px, cierre de sesión y bloqueo de clientes. Requiere `.env`, un administrador existente identificado por `ADMIN_USER` y el puerto 3202 libre. Usa sesiones de prueba firmadas y consultas de solo lectura: no modifica productos ni cuentas. Ejecutar después de `npm run build`.
 
 
 ### Gestión comercial
 
-El panel incluye Productos, Inventario, Pedidos y Configuración, separado de la navegación de la tienda.
+El panel incluye Productos, Inventario, Pedidos, Contabilidad, Logística y Configuración, separado de la navegación de la tienda.
 
 - Variantes opcionales por color/talla (hasta 30 por producto), con precios por presentación compartidos. Eliminar una variante del formulario la desactiva y conserva los pedidos históricos.
 - Inventario en unidades por producto o variante. Stock vacío significa sin control; cero significa agotado. El umbral permite filtrar existencias bajas. Los ajustes rechazan sobrescribir un stock que cambió mientras el formulario estaba abierto.
@@ -200,3 +200,16 @@ El panel incluye Productos, Inventario, Pedidos y Configuración, separado de la
 Aplica `npm run db:deploy` antes de desplegar: la migración `20260927000000_gestion_comercial` agrega tablas y columnas sin alterar el catálogo existente. Para migraciones en Neon, usa la conexión directa si el pooler falla.
 
 `npm run test:orders` prueba concurrencia, idempotencia, precios, variantes y stock dentro de un esquema temporal aislado; necesita permisos para crear y eliminar dicho esquema. También recorre el formulario de producto, la compra, confirmación/cancelación y configuración en Chromium, contra ese esquema aislado (puerto 3204 libre y compilación previa). No envía mensajes de WhatsApp ni modifica el catálogo o los pedidos reales. `npm run test:admin` comprueba las secciones a 320, 768 y 1280 px con un administrador existente, sin modificar datos.
+
+### Contabilidad operativa y logística integradas
+
+El panel conecta `/admin/contabilidad` y `/admin/logistica` con los pedidos, el inventario y el inicio administrativo. Aplica la migración aditiva `20261003000000_contabilidad_logistica` con `npm run db:deploy` antes de iniciar esta versión. Los pedidos históricos entregados/cancelados conservan el estado equivalente en logística; no se inventan cobros ni fechas de entrega anteriores.
+
+- **Contabilidad:** ventas confirmadas o entregadas vigentes, cobros, gastos, devoluciones, flujo neto de caja y saldos por pedido. Los importes se calculan con decimales. Los indicadores acumulan todo el historial registrado; caja parte de cero, sin saldo inicial importado. No constituye contabilidad fiscal, facturación electrónica, cálculo de impuestos, costo de ventas ni libro de partida doble.
+- **Cobros:** abre un pedido confirmado o entregado para registrar un cobro parcial o total con medio, concepto y referencia. El servidor impide superar el saldo, incluso con solicitudes concurrentes. Una clave única evita duplicar el mismo envío; después de guardar, usa “Nuevo formulario” para otro movimiento.
+- **Devoluciones:** se registran al realizar la devolución real, hasta el importe cobrado neto. Cancelar devuelve el stock y excluye la venta de los saldos por cobrar, pero no crea un reembolso ficticio: el importe cobrado queda pendiente de devolver y aparece en el inicio y en contabilidad. Los movimientos conservan fecha, usuario y pedido relacionado; no se editan ni eliminan desde el panel.
+- **Gastos:** se registran desde contabilidad como salidas de caja, sin crear pedidos ni modificar stock. No representan compras de inventario.
+- **Logística:** confirmar un pedido descuenta existencias y lo incorpora a preparación. Para pasarlo a “En camino” se exige dirección y transportista; la guía es opcional. “Marcar como entregado” sincroniza pedido y despacho. Un envío en camino debe regresar a preparación tras verificar su retorno físico antes de cancelarlo y devolver stock. El seguimiento se registra manualmente, sin integración con transportistas externos.
+- **Seguridad:** todas las pantallas y acciones exigen administrador. Los movimientos y cambios de estado se validan en el servidor, con transacciones serializables y reintentos ante conflictos.
+
+`npm run test:orders` incluye pruebas de cobros y devoluciones concurrentes, idempotencia, límites de importes, saldos, despacho y entrega. Recorre también los nuevos formularios en Chromium y comprueba contabilidad/logística a 320, 768 y 1280 px. Usa un esquema temporal aislado y lo elimina al terminar; no registra operaciones en los datos reales. `npm run test:admin` incluye la navegación a ambos módulos.

@@ -41,6 +41,8 @@ test('Panel independiente, navegación y formulario adaptables', async ({
     ['/admin/inventario', 'Inventario'],
     ['/admin/pedidos', 'Pedidos'],
     ['/admin/configuracion', 'Configuración'],
+    ['/admin/contabilidad', 'Contabilidad'],
+    ['/admin/logistica', 'Logística'],
   ]) {
     await page.goto(path);
     await expect(

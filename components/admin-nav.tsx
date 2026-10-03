@@ -7,12 +7,16 @@ import {
   Boxes,
   ClipboardList,
   Settings,
+  Wallet,
+  Truck,
 } from 'lucide-react';
 const links = [
   { href: '/admin', label: 'Inicio', Icon: LayoutDashboard },
   { href: '/admin/productos', label: 'Productos', Icon: Package },
   { href: '/admin/inventario', label: 'Inventario', Icon: Boxes },
   { href: '/admin/pedidos', label: 'Pedidos', Icon: ClipboardList },
+  { href: '/admin/contabilidad', label: 'Contabilidad', Icon: Wallet },
+  { href: '/admin/logistica', label: 'Logística', Icon: Truck },
   { href: '/admin/configuracion', label: 'Ajustes', Icon: Settings },
 ];
 export function AdminNav() {
@@ -20,7 +24,7 @@ export function AdminNav() {
   return (
     <nav
       aria-label="Administración"
-      className="grid grid-cols-5 gap-1 lg:grid-cols-1 lg:gap-1"
+      className="grid grid-cols-4 sm:grid-cols-7 gap-1 lg:grid-cols-1 lg:gap-1"
     >
       {links.map(({ href, label, Icon }) => {
         const active =

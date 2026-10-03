@@ -210,10 +210,16 @@ export async function updateOrderStatus(
     if (order.estado === next) return order;
     if (!transitions[order.estado].includes(next))
       throw new OrderError('Ese cambio de estado no está permitido.');
+    if (next === 'CANCELADO' && order.despacho === 'EN_CAMINO')
+      throw new OrderError('El pedido está en camino. Registra su retorno a preparación antes de cancelarlo.');
     // El cambio de estado y los movimientos de stock se confirman juntos.
     const changed = await tx.pedido.updateMany({
       where: { id, estado: order.estado },
-      data: { estado: next },
+      data: {
+        estado: next,
+        ...(next === 'ENTREGADO' ? { despacho: 'ENTREGADO' as const, entregadoAt: new Date() } : {}),
+        ...(next === 'CANCELADO' ? { despacho: 'CANCELADO' as const } : {}),
+      },
     });
     if (changed.count !== 1)
       throw new OrderError(

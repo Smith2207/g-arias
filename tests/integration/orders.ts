@@ -1,3 +1,4 @@
+import { operationsFlow } from './operations-flow';
 import { browserFlow } from './browser-flow';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -176,6 +177,7 @@ async function main() {
       (await db.variante.findUniqueOrThrow({ where: { id: v.id } })).stock,
       null,
     );
+    await operationsFlow(db);
     await browserFlow(db, url.toString());
     console.log(
       'Pedidos: idempotencia concurrente, precios, stock, variantes, estados y cancelación verificados en un esquema aislado.',

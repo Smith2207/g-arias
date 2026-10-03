@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { OrderOperations } from '@/components/order-operations';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
@@ -15,7 +16,7 @@ export default async function Order({
   const { id } = await params;
   const o = await db.pedido.findUnique({
     where: { id },
-    include: { lineas: true },
+    include: { lineas: true, movimientos: { orderBy: { createdAt: 'desc' } } },
   });
   if (!o) notFound();
   return (
@@ -99,6 +100,7 @@ export default async function Order({
           ))}
         </aside>
       </div>
+      <OrderOperations order={o} />
     </>
   );
 }

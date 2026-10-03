@@ -85,6 +85,13 @@ model Pedido {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   lineas      LineaPedido[]
+  movimientos MovimientoCaja[]
+  despacho    EstadoDespacho @default(PREPARACION)
+  direccion   String @default("")
+  transportista String @default("")
+  seguimiento String @default("")
+  enviadoAt   DateTime?
+  entregadoAt DateTime?
   @@index([estado, createdAt])
   @@index([telefono, createdAt])
 }
@@ -116,4 +123,34 @@ model Configuracion {
   contacto       String @default("")
   condicionesEnvio String @default("Coordinamos disponibilidad, pago y envío por WhatsApp.")
   updatedAt      DateTime @updatedAt
+}
+
+
+enum EstadoDespacho {
+  PREPARACION
+  EN_CAMINO
+  ENTREGADO
+  CANCELADO
+}
+
+enum TipoMovimiento {
+  COBRO
+  GASTO
+  DEVOLUCION
+}
+
+model MovimientoCaja {
+  id          String @id @default(cuid())
+  clave       String @unique
+  pedidoId    String?
+  pedido      Pedido? @relation(fields: [pedidoId], references: [id], onDelete: Restrict)
+  tipo        TipoMovimiento
+  monto       Decimal @db.Decimal(18, 2)
+  concepto    String
+  medio       String
+  referencia  String @default("")
+  registradoPor String
+  createdAt   DateTime @default(now())
+  @@index([pedidoId, createdAt])
+  @@index([tipo, createdAt])
 }
